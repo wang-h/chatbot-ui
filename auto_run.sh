@@ -1,1 +1,1 @@
-docker run -d -e OPENAI_API_KEY=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 -p 3000:3000 chatgpt-ui 
+docker run -d -e OPENAI_API_KEY=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 -p 3000:3000 chatbot-ui 
