@@ -4,47 +4,52 @@ import { useState } from 'react';
 import Cookies from 'js-cookie';
 
 type Props = {
-  onLogin: () => void;
-  username: string | undefined;
-  password: string | undefined;
-  bypassAuth: boolean;
-};
+    onLogin: () => void;
+    username: string | undefined;
+    password: string | undefined;
+    bypassAuth: boolean;
+  };
+  
+  export default function LoginForm({
+      onLogin,
+      username,
+      password
+    }: Props) {
+    const [isLoading, setIsLoading] = useState(false);
+    const bypassAuth = false; // Set to true to enable bypass, set to false to disable bypass
 
-export default function LoginForm({
-    onLogin,
-    username,
-    password,
-    bypassAuth,
-  }: Props) {
-  const [isLoading, setIsLoading] = useState(false);
+    const handleSubmit = async (values: { username: string; password: string }) => {
+        setIsLoading(true);
+        
+        if (
+        bypassAuth &&
+        values.username.trim() === '' &&
+        values.password.trim() === ''
+        ) {
+        console.log('Bypassing authentication');
+        Cookies.set('isLoggedIn', 'true', { expires: 1 });
+        onLogin();
+        setIsLoading(false);
+        return;
+        }
 
-  const handleSubmit = async (values: { username: string; password: string }) => {
-    setIsLoading(true);
+        // Check if the entered username and password match the ones from the .env file
+        
+        if (values.username === username && values.password === password) {
+        console.log('Credentials match.');
+        Cookies.set('isLoggedIn', 'true', { expires: 1 }); // Set a cookie for 1 day
+        onLogin();
+        } else { 
+        console.log('Credentials do not match.');
+        // If the authentication fails, show an error message
+        toast.error('Invalid username or password.');
+        }
 
-    if (bypassAuth && values.username.trim() === '' && values.password.trim() === '') {
-      console.log('Bypassing authentication');
-      Cookies.set('isLoggedIn', 'true', { expires: 1 });
-      onLogin();
-      setIsLoading(false);
-      return;
-    }
-
-    // Check if the entered username and password match the ones from the .env file
-    if (values.username === username && values.password === password) {
-      console.log('Credentials match.');
-      Cookies.set('isLoggedIn', 'true', { expires: 1 }); // Set a cookie for 1 day
-      onLogin();
-    } else {
-      console.log('Credentials do not match.');
-      // If the authentication fails, show an error message
-      toast.error('Invalid username or password.');
-    }
-
-    setIsLoading(false);
+        setIsLoading(false);
   };
 
   return (
-        
+
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
             <Formik
                 initialValues={{
@@ -54,10 +59,10 @@ export default function LoginForm({
                 onSubmit={handleSubmit}
             >
                 <Form className="bg-white p-8 rounded-md shadow-md">
-                    <h1 className="text-2xl font-medium text-gray-800 mb-4">Login</h1>
+                    <h1 className="text-2xl font-medium text-gray-800 mb-4">🤗ChatGPT@SHU</h1>
                     <div className="mb-4">
                         <label htmlFor="username" className="block text-gray-700 font-medium mb-2">
-                            Username
+                            用户名
                         </label>
                         <Field
                             id="username"
@@ -68,7 +73,7 @@ export default function LoginForm({
                     </div>
                     <div className="mb-4">
                         <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-                            Password
+                            密码
                         </label>
                         <Field
                             type="password"
@@ -80,7 +85,7 @@ export default function LoginForm({
                     </div>
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 w-full"
+                        className="border border-gray-300 py-2 px-4 rounded-md hover:border-black w-full"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Logging in...' : 'Login'}
